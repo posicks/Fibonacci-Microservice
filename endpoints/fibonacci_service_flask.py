@@ -10,6 +10,7 @@ from flask.globals import request
 import json
 import sys
 import getopt
+from flask.helpers import make_response
 
 app = Flask(__name__)
 
@@ -26,11 +27,17 @@ def fibonacciEndpoint():
         return json.dumps({'error': 'HTTP ' + request.method + ' is not supported, please use an HTTP GET'}, separators=(', ', ": "))
     
     if start < 0:
-        return json.dumps({'error': 'The "start" parameter can not be a negative number (start >= 0)'}, separators=(', ', ": "))
+        resp = resp = make_response(json.dumps({'error': 'The "start" parameter can not be a negative number (start >= 0)'}, separators=(', ', ": ")), 400)
+        resp.headers["Content-Type"] = "application/json"
+        return resp 
     elif length < 1:
-        return json.dumps({'error': 'The "length" parameter can not be a negative number (length >= 0)'}, separators=(', ', ": "))
+        resp = make_response(json.dumps({'error': 'The "length" parameter can not be less than 1 (length >= 1)'}, separators=(', ', ": ")), 400)
+        resp.headers["Content-Type"] = "application/json" 
+        return  resp
     else:
-        return json.dumps({'fibonacci': fibonacci.fibonacci_matrix(start, length)}, separators=(', ', ": "))
+        resp = resp = make_response(json.dumps({'fibonacci': fibonacci.fibonacci_matrix(start, length)}, separators=(', ', ": ")), 200)
+        resp.headers["Content-Type"] = "application/json"
+        return resp 
 
 
 if __name__ == '__main__':
